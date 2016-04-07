@@ -24,7 +24,7 @@ mixin post(post)
 
 block intro
 	.container
-		h1= data.category ? data.category.name : 'Blog'
+		h1= data.category ? data.category.name : __('blog.title')
 
 block content
 	.container: .row

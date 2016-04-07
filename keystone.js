@@ -4,6 +4,7 @@ require('dotenv').load();
 
 // Require keystone
 var keystone = require('keystone');
+var keystoneMultilingual = require('keystone-multilingual');
 
 // Initialise Keystone with your project's configuration.
 // See http://keystonejs.com/guide/config for available options
@@ -26,6 +27,8 @@ keystone.init({
 	'user model': 'User'
 
 });
+
+keystoneMultilingual.init(keystone);
 
 // Load your project's Models
 

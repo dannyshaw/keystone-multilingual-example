@@ -19,6 +19,8 @@
  */
 
 var keystone = require('keystone');
+var keystoneMultilingual = require('keystone-multilingual');
+
 var middleware = require('./middleware');
 var importRoutes = keystone.importer(__dirname);
 
@@ -35,12 +37,86 @@ var routes = {
 exports = module.exports = function(app) {
 	
 	// Views
-	app.get('/', routes.views.index);
-	app.get('/blog/:category?', routes.views.blog);
-	app.get('/blog/post/:post', routes.views.post);
+	// app.get('/', routes.views.index);
+	// app.get('/blog/:category?', routes.views.blog);
+	// app.get('/blog/post/:post', routes.views.post);
 	
 	
 	// NOTE: To protect a route so that only admins can see it, use the requireUser middleware:
 	// app.get('/protected', middleware.requireUser, routes.views.protected);
-	
+	keystoneMultilingual.initMiddleware({
+		app: app,
+		languageNavMap: {
+			"de" : {
+				"home": {
+					"label": "Zuhause",
+					"key": "home-de",
+					"href": "/"
+				},
+				"blog": {
+					"label": "Blogen",
+					"key": "blog-de",
+					"href": "/blogen"
+				}
+			},
+			"en" : {
+				//keys matching
+				"home": {
+					"label": "Home",
+					"key": "home-de",
+					"href": "/"
+				},
+				"blog": {
+					"label": "Blog",
+					"key": "blog-en",
+					"href": "/blog"
+				}
+			}
+		},
+		languageRouteMap: {
+			'home': {
+				controller: routes.views.index,
+				section: null,
+				route: '/'
+			},
+			'blog': {
+				section: 'news',
+				controller: routes.views.blog,
+				languages: {
+					'en': {
+						route: '/blog'
+					},
+					'de': {
+						route: '/blogen'
+					}
+				}
+			},
+			'blog:category': {
+				section: 'news',
+				controller: routes.views.blog,
+				languages: {
+					'en': {
+						route: '/blog/:category'
+					},
+					'de': {
+						route: '/blogen/:category'
+					}
+				}
+			},		
+			'blog.post:post': {
+				section: 'news',
+				controller: routes.views.post,
+				languages: {
+					'en': {
+						route: '/blog/post/:post'
+					},
+					'de': {
+						route: '/blogen/posten/:post'
+					}
+				}
+			},
+
+		},
+
+	})
 };

@@ -20,7 +20,7 @@ exports = module.exports = function(req, res) {
 		var q = keystone.list('Post').model.findOne({
 			state: 'published',
 			slug: locals.filters.post
-		}).populate('author categories');
+		}).populate('author categories language translation');
 		
 		q.exec(function(err, result) {
 			locals.data.post = result;
@@ -28,6 +28,25 @@ exports = module.exports = function(req, res) {
 		});
 		
 	});
+
+
+	//redirect to the translation if this post is not in the currently set langauge
+	//I hope to move this to the package as an automatic feature of the view
+	view.on('init', function (next) { 
+		if(locals.data.post.language.key !== req.i18n.getLocale()) {
+			if(locals.data.post.translation) {
+				req.params.post = locals.data.post.translation.slug;
+				res.languageRedirect(req, res, next);
+				return;
+			} else {
+				//no translation
+				req.flash('info', req.i18n.__('messages.news-update-not-available'));
+			}
+		}
+
+		next();
+	});
+
 	
 	// Load other posts
 	view.on('init', function(next) {

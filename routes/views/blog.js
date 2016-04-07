@@ -42,6 +42,18 @@ exports = module.exports = function(req, res) {
 		});
 		
 	});
+
+	// Load the language filter (only show english if we're in en, etc)
+	// I hope to move this into keystone-multilingual somehow
+	view.on('init', (next) => {
+		var language = req.i18n.getLocale();
+		keystone.list('Language').model.findOne({ key: language }).exec(function(err, result) {
+			locals.data.language = result;
+			next(err);
+		});
+			
+	});
+
 	
 	// Load the current category filter
 	view.on('init', function(next) {
@@ -72,6 +84,11 @@ exports = module.exports = function(req, res) {
 		if (locals.data.category) {
 			q.where('categories').in([locals.data.category]);
 		}
+
+		if (locals.data.language) {
+			q.where('language').in([locals.data.language]);
+		}
+				
 		
 		q.exec(function(err, results) {
 			locals.data.posts = results;
